@@ -39,6 +39,7 @@ import serial
 import serial.tools.list_ports
 
 import tkinter as tk
+import tkinter.font as tkfont
 from tkinter import ttk, messagebox
 
 from matplotlib.figure import Figure
@@ -81,10 +82,20 @@ def clamp(val, lo, hi):
 # Classe principal da GUI
 # -------------------------------
 class BolaNoTuboApp(tk.Tk):
+    def _shrink_fonts(self):
+        try:
+            for name in ("TkDefaultFont", "TkTextFont", "TkMenuFont", "TkHeadingFont", "TkTooltipFont", "TkFixedFont", "TkIconFont", "TkSmallCaptionFont"):
+                f = tkfont.nametofont(name)
+                size = max(8, f.cget("size") - 1)  # reduce one point, min 8
+                f.configure(size=size)
+        except Exception:
+            pass
+
     def __init__(self):
         super().__init__()
         self.title("Bola no Tubo")
-        self.geometry("1100x800")
+        self._shrink_fonts()
+        self.geometry("1280x720")
 
         # Estado serial
         self.ser: Optional[serial.Serial] = None
@@ -125,12 +136,12 @@ class BolaNoTuboApp(tk.Tk):
         self.rowconfigure(1, weight=1)
 
         top = ttk.Frame(self)
-        top.grid(row=0, column=0, sticky="ew", padx=10, pady=6)
+        top.grid(row=0, column=0, sticky="ew", padx=8, pady=4)
         top.columnconfigure(5, weight=1)
 
         # Portas seriais
         ttk.Label(top, text="Porta:").grid(row=0, column=0, sticky="w")
-        self.port_combo = ttk.Combobox(top, values=list_serial_ports(), width=20, state="readonly")
+        self.port_combo = ttk.Combobox(top, values=list_serial_ports(), width=16, state="readonly")
         self.port_combo.grid(row=0, column=1, padx=4)
         ttk.Button(top, text="Atualizar", command=self._refresh_ports).grid(row=0, column=2, padx=4)
         self.connect_btn = ttk.Button(top, text="Conectar", command=self._toggle_connection)
@@ -147,32 +158,32 @@ class BolaNoTuboApp(tk.Tk):
                                        ])
         self.mode_combo.current(0)
         self.mode_combo.grid(row=0, column=5, sticky="w")
-        ttk.Button(top, text="Enviar Comando", command=self._send_current_command).grid(row=0, column=6, padx=6)
+        ttk.Button(top, text="Enviar Cmd", command=self._send_current_command).grid(row=0, column=6, padx=6)
         ttk.Button(top, text="RESET", command=self._send_reset).grid(row=0, column=7, padx=6)
 
         # Linha de entradas (setpoints)
         sp = ttk.LabelFrame(self, text="Setpoints / Comandos")
-        sp.grid(row=1, column=0, sticky="ew", padx=10, pady=6)
+        sp.grid(row=1, column=0, sticky="ew", padx=8, pady=4)
         for i in range(8):
             sp.columnconfigure(i, weight=1)
 
         ttk.Label(sp, text="SP Altura (mm):").grid(row=0, column=0, sticky="e")
-        self.sp_height_entry = ttk.Spinbox(sp, from_=0, to=500, increment=1, textvariable=self.sp_height_var, width=8)
+        self.sp_height_entry = ttk.Spinbox(sp, from_=0, to=500, increment=1, textvariable=self.sp_height_var, width=6)
         self.sp_height_entry.grid(row=0, column=1, sticky="w", padx=4)
 
         ttk.Label(sp, text="SP Válvula (%):").grid(row=0, column=2, sticky="e")
-        self.sp_valve_entry = ttk.Spinbox(sp, from_=0, to=100, increment=1, textvariable=self.sp_valve_var, width=8)
+        self.sp_valve_entry = ttk.Spinbox(sp, from_=0, to=100, increment=1, textvariable=self.sp_valve_var, width=6)
         self.sp_valve_entry.grid(row=0, column=3, sticky="w", padx=4)
 
-        ttk.Label(sp, text="SP Duty Ventoinha (%):").grid(row=0, column=4, sticky="e")
-        self.sp_duty_entry = ttk.Spinbox(sp, from_=0, to=100, increment=1, textvariable=self.sp_duty_var, width=8)
+        ttk.Label(sp, text="SP Duty (%):").grid(row=0, column=4, sticky="e")
+        self.sp_duty_entry = ttk.Spinbox(sp, from_=0, to=100, increment=1, textvariable=self.sp_duty_var, width=6)
         self.sp_duty_entry.grid(row=0, column=5, sticky="w", padx=4)
 
         ttk.Button(sp, text="Enviar", command=self._send_current_command).grid(row=0, column=6, padx=8)
 
         # Linha de valores recebidos
         rx = ttk.LabelFrame(self, text="Recebidos do Micro")
-        rx.grid(row=2, column=0, sticky="ew", padx=10, pady=6)
+        rx.grid(row=2, column=0, sticky="ew", padx=8, pady=4)
         for i in range(10):
             rx.columnconfigure(i, weight=1)
 
@@ -198,18 +209,18 @@ class BolaNoTuboApp(tk.Tk):
         ttk.Label(rx, text="Posição Válvula (passos):").grid(row=1, column=2, sticky="e")
         ttk.Label(rx, textvariable=self.rx_valve_pos).grid(row=1, column=3, sticky="w")
 
-        ttk.Label(rx, text="Duty Vent. (0..1023):").grid(row=1, column=4, sticky="e")
+        ttk.Label(rx, text="Duty (0..1023):").grid(row=1, column=4, sticky="e")
         ttk.Label(rx, textvariable=self.rx_duty).grid(row=1, column=5, sticky="w")
 
         # Gráficos
         plots = ttk.LabelFrame(self, text="Gráficos")
-        plots.grid(row=3, column=0, sticky="nsew", padx=10, pady=6)
+        plots.grid(row=3, column=0, sticky="nsew", padx=8, pady=4)
         plots.rowconfigure(1, weight=1)
         plots.columnconfigure(0, weight=1)
 
         # Controle da janela de tempo
         ctrl = ttk.Frame(plots)
-        ctrl.grid(row=0, column=0, sticky="ew", pady=(4,4))
+        ctrl.grid(row=0, column=0, sticky="ew", pady=(2,2))
         ttk.Label(ctrl, text="Janela (s):").grid(row=0, column=0, sticky="w")
         self.window_seconds_var = tk.IntVar(value=PLOT_WINDOW_SECONDS)
         self.window_seconds = PLOT_WINDOW_SECONDS
@@ -217,7 +228,7 @@ class BolaNoTuboApp(tk.Tk):
         wnd.grid(row=0, column=1, padx=6)
         ttk.Button(ctrl, text="Aplicar", command=self._apply_window_seconds).grid(row=0, column=2)
 
-        self.fig = Figure(figsize=(10, 6), dpi=100)
+        self.fig = Figure(figsize=(9, 4.6), dpi=100)
         self.ax1 = self.fig.add_subplot(211)
         self.ax2 = self.fig.add_subplot(212, sharex=self.ax1)
 
@@ -227,19 +238,20 @@ class BolaNoTuboApp(tk.Tk):
 
         self.line1_sp, = self.ax1.plot([], [], lw=1, label='SP Altura')
         self.line1_h,  = self.ax1.plot([], [], lw=1, label='Altura medida')
-        self.ax1.legend(loc='upper right', fontsize=8)
+        self.ax1.legend(loc='upper right', fontsize=7)
 
         self.line2_duty,  = self.ax2.plot([], [], lw=1, label='Duty (%)')
         self.line2_valve, = self.ax2.plot([], [], lw=1, label='Válvula (%)')
-        self.ax2.legend(loc='upper right', fontsize=8)
+        self.ax2.legend(loc='upper right', fontsize=7)
 
+        self.fig.tight_layout()
         self.canvas = FigureCanvasTkAgg(self.fig, master=plots)
         self.canvas.draw()
         self.canvas.get_tk_widget().grid(row=1, column=0, sticky="nsew")
 
         # Rodapé
         status = ttk.Frame(self)
-        status.grid(row=4, column=0, sticky="ew", padx=10, pady=(0,6))
+        status.grid(row=4, column=0, sticky="ew", padx=10, pady=(0,4))
         self.status_label = ttk.Label(status, text="Desconectado.")
         self.status_label.grid(row=0, column=0, sticky="w")
 
