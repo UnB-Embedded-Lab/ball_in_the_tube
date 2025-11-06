@@ -7,4 +7,9 @@ abertura ou fechamento de uma válvula acoplada a um motor de passo.
 
 Outras informações sobre instalação e uso da aplicação no [link](app/README.md)
 
-Licença: MIT
+## 🧰 Licença e autoria
+
+Projeto desenvolvido na **Universidade de Brasília (UnB)**  
+Laboratório de Sistemas Embarcados — Prof. Dr. Guillermo Álvarez Bestard
+
+Uso acadêmico e pesquisa. Cite a fonte em publicações relacionadas.

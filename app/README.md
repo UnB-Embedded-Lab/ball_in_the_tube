@@ -128,3 +128,10 @@ Caso os gráficos não exibam dados, verifique:
 - O microcontrolador realmente envia quadros de 15 bytes.  
 - A taxa de transmissão está em **115200 bps**.  
 - Nenhum outro programa usa a porta serial.
+
+## 🧰 Licença e autoria
+
+Projeto desenvolvido na **Universidade de Brasília (UnB)**  
+Laboratório de Sistemas Embarcados — Prof. Dr. Guillermo Álvarez Bestard
+
+Uso acadêmico e pesquisa. Cite a fonte em publicações relacionadas.
