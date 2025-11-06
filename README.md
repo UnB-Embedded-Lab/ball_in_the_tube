@@ -5,6 +5,6 @@ que flutua dentro de um tubo vertical pela ação de um fluxo de ar. O fluxo de 
 ventoinha e pode ser controlado mudando o ciclo útil do sinal de alimentação da ventoinha ou pela
 abertura ou fechamento de uma válvula acoplada a um motor de passo.
 
-Outras informações sobre instalação e uso da aplicação no [link](https://github.com/UnB-Embedded-Lab/ball_in_the_tube/tree/main/app)
+Outras informações sobre instalação e uso da aplicação no [link](app/README.md)
 
 Licença: MIT
